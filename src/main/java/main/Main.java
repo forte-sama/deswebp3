@@ -1,9 +1,11 @@
 package main;
 
 import freemarker.template.Configuration;
+import models.Usuario;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 import wrappers.DB;
+import wrappers.GestorUsuarios;
 
 import java.util.HashMap;
 
@@ -29,10 +31,31 @@ public class Main {
         /** Ver lista de estudiantes */
         get("/", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
-            data.put("action","home");
+            data.put("action","index");
 
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
 
+        get("/login", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","login");
+
+            GestorUsuarios.crearUsuario(crear());
+
+            System.out.println(GestorUsuarios.getUsuario(crear().getUsername()));
+
+            return new ModelAndView(data,"login.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        get("/register", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","register");
+
+            return new ModelAndView(data,"register.ftl");
+        }, new FreeMarkerEngine(configuration));
+    }
+
+    public static Usuario crear() {
+        return new Usuario("coco","abc","nombre",false,false);
     }
 }
