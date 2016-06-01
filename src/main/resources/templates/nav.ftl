@@ -14,25 +14,28 @@
             <ul class="nav navbar-nav navbar-left">
                 <li class="active"><a href="/">Home</a></li>
                 <li><a href="#">Link</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <#if logged_in??>
+                <li><a href="/logout">Cerrar Sesion</a></li>
+                <#else>
+                <#if action != "login">
+                <li><a href="/login">Login</a></li>
+                </#if>
+                <#if action != "register">
+                <li><a href="/register">Register</a></li>
+                </#if>
+                </#if>
+                <#--TODO SOLO PRESENTAR DROPDOWN CUANDO SEA UN ADMIN -->
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Dropdown <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Admin <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
+                        <li><a href="#">Ver Usuarios</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">One more separated link</a></li>
+                        <li><a href="#">Otra accion</a></li>
                     </ul>
                 </li>
             </ul>
-            <#if !logged_in??>
-            <ul class="nav navbar-nav navbar-right">
-                <li role="separator" class="divider"></li>
-                <li><a href="/login">Login</a></li>
-            </ul>
-            </#if>
         </div>
     </div>
 </nav>

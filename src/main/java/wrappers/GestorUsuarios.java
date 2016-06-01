@@ -112,6 +112,42 @@ public class GestorUsuarios {
 
         return user;
     }
+
+    public static boolean credencialesValidas(String username, String password) {
+        boolean exito = true;
+        Connection con = null;
+
+        try {
+            con = DB.getConnection();
+            Usuario userTarget = getUsuario(username);
+
+            //si no encontro usuario con username, falla
+            if(userTarget != null) {
+                //si username/password no coinciden, falla
+                if(!userTarget.getPassword().contentEquals(password)) {
+                    exito = false;
+                }
+            }
+            else {
+                exito = false;
+            }
+        } catch (SQLException e) {
+            //TODO CAMBIAR MENSAJE DE EXCEPCION
+            e.printStackTrace();
+            //si ocurrio algun fallo en la bd, falla
+            exito = false;
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                e.printStackTrace();
+            }
+        }
+
+        return exito;
+    }
+
     private static boolean esUsernameNuevo(String target) {
         Usuario user = getUsuario(target);
 

@@ -19,12 +19,12 @@ public class DB {
     static {
         //iniciar el servidor H2, si no esta Up ya
         try {
-            Server.createTcpServer("-tcpPort","9092","-tcpAllowOthers").start();
             System.out.println("Inicializando servidor H2...");
-            System.out.println("Servidor H2 iniciado con exito!");
+            Server.createTcpServer("-tcpPort","9092","-tcpAllowOthers").start();
+            System.out.println("Servidor H2... Estado: OK!");
         } catch (JdbcSQLException e) {
             //TODO CAMBIAR MENSAJE DE EXCEPCION
-            e.printStackTrace();
+//            e.printStackTrace();
             System.out.println("Puede que el Servidor H2 ya este Up...");
         } catch (SQLException e) {
             //TODO CAMBIAR MENSAJE DE EXCEPCION
@@ -80,7 +80,7 @@ public class DB {
             Connection con = getConnection();
             Statement stm = con.createStatement();
 
-            System.out.println("Creando estructura de aplicacion...");
+            System.out.println("Creando modelos...");
 
             //Orden de creacion de estructura importa
             stm.execute(sql_usuario);
@@ -91,7 +91,7 @@ public class DB {
             //crear usuario admin por defecto, en caso de no existir
             stm.execute(sql_usuario_admin);
 
-            System.out.println("Estructura inicial creada!");
+            System.out.println("Modelos... Estado: OK!");
 
             //cerrar conexion
             con.close();
