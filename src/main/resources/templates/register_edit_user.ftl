@@ -17,7 +17,11 @@
             <div class="well well-lg">
                 <div class="row">
                     <div class="col col-md-12">
+                        <#if action == "register">
                         <h1>Formulario de registro</h1>
+                        <#elseif action == "edit_user">
+                            <h1>Formulario de edicion</h1>
+                        </#if>
                     </div>
                 </div>
                 <#if msg??>
@@ -46,6 +50,11 @@
                                         Terminar <#if action == "register">Registro<#elseif action == "edit_user">Edicion</#if>
                                     </button>
                                 </div>
+                                <#if action == "edit_user" && username??>
+                                <div class="col-md-3 col-md-offset-2">
+                                    <a class="btn btn-danger" href="/admin/delete_user/${username}">Borrar usuario</a>
+                                </div>
+                                </#if>
                             </div>
                         </form>
                     </div>

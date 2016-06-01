@@ -17,18 +17,6 @@
             <div class="well well-lg">
                 <h1>Commit inicial</h1>
                 <p>Estado inicial de la practica #3</p>
-                <#if msg??>
-                    <div
-                        <#if msg_type == "error">
-                        class="alert alert-danger alert-dismissible"
-                        <#elseif msg_type == "success">
-                        class="alert alert-success alert-dismissible"
-                        </#if>
-                        role="alert">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <p>${msg}</p>
-                    </div>
-                </#if>
             </div>
         </div>
     </div>

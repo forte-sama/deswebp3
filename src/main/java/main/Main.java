@@ -33,14 +33,6 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","index");
 
-            if(request.cookie("msg") != null) {
-                data.put("msg_type",request.cookie("msg_type"));
-                data.put("msg",request.cookie("msg"));
-
-                response.removeCookie("msg");
-                response.removeCookie("msg_type");
-            }
-
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
 
@@ -48,19 +40,26 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","list_users");
 
-            if(request.cookie("msg") != null) {
-                data.put("msg_type",request.cookie("msg_type"));
-                data.put("msg",request.cookie("msg"));
-
-                response.removeCookie("msg");
-                response.removeCookie("msg_type");
-            }
-
             //obtener los usuarios
             data.put("usuarios", GestorUsuarios.getUsuarios());
 
             return new ModelAndView(data,"user_list.ftl");
         }, new FreeMarkerEngine(configuration));
+
+        get("/admin/delete_user/:username",(request, response) -> {
+            String username = request.params("username");
+
+            Usuario target = GestorUsuarios.getUsuario(username);
+
+            if(target != null) {
+                //borrar
+                GestorUsuarios.deleteUsuario(username);
+            }
+            //redireccionar
+            response.redirect("/admin/users");
+
+            return "";
+        });
 
         get("/admin/edit_user/:username", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
@@ -116,10 +115,7 @@ public class Main {
                 target = new Usuario(username,password,nombre,esAdministrador,esAutor);
 
                 if(GestorUsuarios.saveUsuario(target,false)) {
-                    //modificar cookie de mensaje
-                    response.cookie("msg_type","success");
-                    response.cookie("msg","Usuario editado con exito!");
-                    //redireccionar con estado de exito
+                    //redireccionar
                     response.redirect("/admin/users");
                 }
                 else {
@@ -164,9 +160,6 @@ public class Main {
                 if(GestorUsuarios.credencialesValidas(username,password)) {
                     //TODO iniciar datos de sesion
 
-                    //modificar cookie de mensaje
-                    response.cookie("msg_type","success");
-                    response.cookie("msg","Sesion iniciada con exito!");
                     //redireccionar con estado de exito
                     response.redirect("/");
                 }
@@ -207,9 +200,6 @@ public class Main {
 
                 //persistir nueva instancia, en caso de ser valida
                 if(GestorUsuarios.saveUsuario(newUser,true)) {
-                    //modificar cookie de mensaje
-                    response.cookie("msg_type","success");
-                    response.cookie("msg","Usuario creado con exito!");
                     //redireccionar con mensaje de exito
                     response.redirect("/");
                 }

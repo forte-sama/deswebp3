@@ -17,18 +17,6 @@
             <div class="well well-lg">
                 <div class="row">
                     <div class="col col-md-12">
-                        <#if msg??>
-                        <div
-                            <#if msg_type == "error">
-                                    class="alert alert-danger alert-dismissible"
-                            <#elseif msg_type == "success">
-                                    class="alert alert-success alert-dismissible"
-                            </#if>
-                                    role="alert">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <p>${msg}</p>
-                        </div>
-                        </#if>
                         <h1>Lista de Usuarios</h1>
                         <hr />
                     </div>

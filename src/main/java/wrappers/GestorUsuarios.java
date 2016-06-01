@@ -1,6 +1,7 @@
 package wrappers;
 
 import models.Usuario;
+import org.h2.command.Prepared;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -121,6 +122,36 @@ public class GestorUsuarios {
         }
 
         return user;
+    }
+
+    public static boolean deleteUsuario(String username) {
+        Usuario target = getUsuario(username);
+
+        boolean exito = true;
+
+        //borrar usuario si existe uno con username
+        if(target != null) {
+            String sql = "DELETE FROM usuarios WHERE username=?;";
+            Connection con = null;
+
+            try {
+                con = DB.getConnection();
+                PreparedStatement pstm = con.prepareStatement(sql);
+                pstm.setString(1,target.getUsername());
+
+                exito = pstm.executeUpdate() > 0;
+            } catch (SQLException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                e.printStackTrace();
+            } finally {
+                closeConnection(con);
+            }
+        }
+        else {
+            exito = false;
+        }
+
+        return exito;
     }
 
     public static ArrayList<Usuario> getUsuarios() {
