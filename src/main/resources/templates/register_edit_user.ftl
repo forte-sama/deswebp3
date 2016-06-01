@@ -32,11 +32,19 @@
                 </#if>
                 <div class="row">
                     <div class="col col-md-12">
-                        <form action="/register" method="post">
+                        <form
+                            <#if action == "register">
+                            action="/register"
+                            <#elseif action == "edit_user">
+                            action="/admin/edit_user"
+                            </#if>
+                            method="post">
                             <#include "login_register_form_fields.ftl">
                             <div class="row">
                                 <div class="col-md-7">
-                                    <button type="submit" name="submit" value="submit" class="btn btn-primary btn-lg">Terminar registro</button>
+                                    <button type="submit" name="submit" value="submit" class="btn btn-primary btn-lg">
+                                        Terminar <#if action == "register">Registro<#elseif action == "edit_user">Edicion</#if>
+                                    </button>
                                 </div>
                             </div>
                         </form>

@@ -72,9 +72,9 @@ public class DB {
                                             "PRIMARY KEY(id_articulo,id_etiqueta)\n" +
                                             ");";
 
-            String sql_usuario_admin =  "MERGE INTO usuarios(username,password,nombre,es_administrador)\n" +
+            String sql_usuario_admin =  "MERGE INTO usuarios(username,password,nombre,es_administrador,es_autor)\n" +
                                         "KEY(username)\n" +
-                                        "VALUES('admin','admin','adminDefault','true');";
+                                        "VALUES('admin','admin','adminDefault','true','true');";
 
             //obtener conexion
             Connection con = getConnection();

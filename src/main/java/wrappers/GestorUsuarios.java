@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by forte on 31/05/16.
@@ -13,25 +14,45 @@ import java.sql.SQLException;
 public class GestorUsuarios {
     private GestorUsuarios() { }
 
-    public static boolean crearUsuario(Usuario target) {
+    public static boolean saveUsuario(Usuario target, boolean estaCreando) {
         boolean exito = true;
         Connection con = null;
-        String sql = "INSERT INTO usuarios(username,password,nombre,es_administrador,es_autor) VALUES(?,?,?,?,?);";
 
         try {
             con = DB.getConnection();
 
-            boolean datosValidos = validarDatos(target,true);
+            boolean datosValidos = validarDatos(target,estaCreando);
 
             if(datosValidos) {
-                PreparedStatement pstm = con.prepareStatement(sql);
-                pstm.setString(1,target.getUsername());
-                pstm.setString(2,target.getPassword());
-                pstm.setString(3,target.getNombre());
-                pstm.setBoolean(4,target.isEsAdministrador());
-                pstm.setBoolean(5,target.isEsAutor());
+                PreparedStatement pstm = null;
+                //si no esta creando, esta editando un usuario
+                if(estaCreando) {
+                    String sql = "INSERT INTO usuarios(username,password,nombre,es_administrador,es_autor) VALUES(?,?,?,?,?);";
+                    pstm = con.prepareStatement(sql);
 
-                exito = pstm.executeUpdate() > 0;
+                    pstm.setString(1,target.getUsername());
+                    pstm.setString(2,target.getPassword());
+                    pstm.setString(3,target.getNombre());
+                    pstm.setBoolean(4,target.isAdministrador());
+                    pstm.setBoolean(5,target.isAutor());
+                }
+                else {
+                    String sql = "UPDATE usuarios SET password=?, nombre=?, es_administrador=?, es_autor=? WHERE username=?";
+                    pstm = con.prepareStatement(sql);
+
+                    pstm.setString(1,target.getPassword());
+                    pstm.setString(2,target.getNombre());
+                    pstm.setBoolean(3,target.isAdministrador());
+                    pstm.setBoolean(4,target.isAutor());
+                    pstm.setString(5,target.getUsername());
+                }
+
+                if(pstm != null) {
+                    exito = pstm.executeUpdate() > 0;
+                }
+                else {
+                    exito = false;
+                }
             }
             else {
                 exito = false;
@@ -40,12 +61,7 @@ public class GestorUsuarios {
             //TODO CAMBIAR MENSAJE DE EXCEPCION
             e.printStackTrace();
         } finally {
-            try {
-                con.close();
-            } catch(SQLException e) {
-                //TODO CAMBIAR MENSAJE DE EXCEPCION
-                e.printStackTrace();
-            }
+            closeConnection(con);
         }
 
         return exito;
@@ -101,16 +117,46 @@ public class GestorUsuarios {
             e.printStackTrace();
 
         } finally {
-            try {
-                //cerrar conexion al finalizar
-                con.close();
-            } catch(SQLException e) {
-                //TODO CAMBIAR MENSAJE DE EXCEPCION
-                e.printStackTrace();
-            }
+            closeConnection(con);
         }
 
         return user;
+    }
+
+    public static ArrayList<Usuario> getUsuarios() {
+        ArrayList<Usuario> resp = new ArrayList<>();
+        Connection con = null;
+
+        try {
+            //obtener conexion
+            con = DB.getConnection();
+            //obtener todos los registros de usuarios
+            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM usuarios");
+
+            while(rs.next()) {
+                resp.add(new Usuario(rs.getString("username"),
+                                     rs.getString("password"),
+                                     rs.getString("nombre"),
+                                     rs.getBoolean("es_administrador"),
+                                     rs.getBoolean("es_autor")));
+            }
+        } catch (SQLException e) {
+            //TODO CAMBIAR MENSAJE DE EXCEPCION
+            e.printStackTrace();
+        } finally {
+            closeConnection(con);
+        }
+
+        return resp;
+    }
+
+    private static void closeConnection(Connection con) {
+        try {
+            con.close();
+        } catch(SQLException e) {
+            //TODO CAMBIAR MENSAJE DE EXCEPCION
+            e.printStackTrace();
+        }
     }
 
     public static boolean credencialesValidas(String username, String password) {
@@ -137,12 +183,7 @@ public class GestorUsuarios {
             //si ocurrio algun fallo en la bd, falla
             exito = false;
         } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                //TODO CAMBIAR MENSAJE DE EXCEPCION
-                e.printStackTrace();
-            }
+            closeConnection(con);
         }
 
         return exito;
