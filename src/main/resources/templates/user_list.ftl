@@ -45,7 +45,7 @@
                                     </#if>
                                 </td>
                                 <td>
-                                    <a class="btn btn-warning" href="/admin/edit_user/${us.username}">Editar</a>
+                                    <a class="btn btn-warning" href="/admin/user/edit/${us.username}">Editar</a>
                                 </td>
                             </tr>
                             </#list>

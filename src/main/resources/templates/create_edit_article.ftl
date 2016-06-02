@@ -17,14 +17,14 @@
             <div class="well well-lg">
                 <div class="row">
                     <div class="col col-md-12">
-                        <#if action == "register">
-                        <h1>Formulario de registro</h1>
-                        <#elseif action == "edit_user">
-                            <h1>Formulario de edicion</h1>
-                        </#if>
+                    <#if action == "new_article">
+                        <h1>Nuevo articulo</h1>
+                    <#elseif action == "edit_article">
+                        <h1>Edicion de articulo</h1>
+                    </#if>
                     </div>
                 </div>
-                <#if msg??>
+            <#if msg??>
                 <div class="row">
                     <div class="col col-md-12 text-danger">
                         <div class="alert alert-danger alert-dismissible" role="alert">
@@ -33,28 +33,33 @@
                         </div>
                     </div>
                 </div>
-                </#if>
+            </#if>
                 <div class="row">
                     <div class="col col-md-12">
                         <form
-                            <#if action == "register">
-                            action="/register"
-                            <#elseif action == "edit_user">
-                            action="/admin/user/edit"
+                        <#--TODO MANDAR AL MISMO URL PARA PROCESAR CREACION/EDICION DE ARTICULO -->
+                        <#--<#if action == "new_article">-->
+                                <#--action="/article/new"-->
+                        <#--<#elseif action == "edit_article">-->
+                                <#--action="/article/edit"-->
+                        <#--</#if>-->
+                                action="article/process"
+                                method="post">
+                            <#if action == "edit_article">
+                            <input type="hidden" name="id" value="${article.id?string["0"]}">
                             </#if>
-                            method="post">
-                            <#include "login_register_form_fields.ftl">
+                            <#--<#include "login_register_form_fields.ftl">-->
                             <div class="row">
                                 <div class="col-md-7">
                                     <button type="submit" name="submit" value="submit" class="btn btn-primary btn-lg">
-                                        Terminar <#if action == "register">Registro<#elseif action == "edit_user">Edicion</#if>
+                                        Terminar <#if action == "new_article">Articulo<#elseif action == "edit_article">Edicion de Articulo</#if>
                                     </button>
                                 </div>
-                                <#if action == "edit_user" && username??>
+                            <#if action == "edit_article" && username??>
                                 <div class="col-md-3 col-md-offset-2">
-                                    <a class="btn btn-danger" href="/admin/user/delete/${username}">Borrar usuario</a>
+                                    <a class="btn btn-danger" href="/article/delete/${article.id}">Borrar</a>
                                 </div>
-                                </#if>
+                            </#if>
                             </div>
                         </form>
                     </div>

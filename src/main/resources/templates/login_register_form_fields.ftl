@@ -1,7 +1,7 @@
 <div class="row">
     <div class="form-group col-md-7">
         <label for="username">Username</label>
-        <input type="text" class="form-control" name="username" placeholder="forte-sama" <#if username??>value="${username}" readonly</#if>>
+        <input type="text" class="form-control" name="username" placeholder="forte-sama" <#if username??>value="${username}" <#if action == "edit_user">readonly</#if></#if>>
     </div>
 </div>
 <div class="row">

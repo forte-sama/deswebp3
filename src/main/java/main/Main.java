@@ -42,7 +42,7 @@ public class Main {
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
 
-        get("/admin/users", (request, response) -> {
+        get("/admin/user/list", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","list_users");
             data.put("loggedIn", Sesion.isLoggedIn(request));
@@ -53,7 +53,7 @@ public class Main {
             return new ModelAndView(data,"user_list.ftl");
         }, new FreeMarkerEngine(configuration));
 
-        get("/admin/delete_user/:username",(request, response) -> {
+        get("/admin/user/delete/:username",(request, response) -> {
             String username = request.params("username");
 
             Usuario target = GestorUsuarios.getUsuario(username);
@@ -63,12 +63,12 @@ public class Main {
                 GestorUsuarios.deleteUsuario(username);
             }
             //redireccionar
-            response.redirect("/admin/users");
+            response.redirect("/admin/user/list");
 
             return "";
         });
 
-        get("/admin/edit_user/:username", (request, response) -> {
+        get("/admin/user/edit/:username", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_user");
             data.put("loggedIn", Sesion.isLoggedIn(request));
@@ -78,7 +78,7 @@ public class Main {
 
             if(target == null) {
                 //redireccionar por error
-                response.redirect("/admin/users");
+                response.redirect("/admin/user/list");
             }
             else {
                 //setear datos para llenar formulario
@@ -101,7 +101,7 @@ public class Main {
             return new ModelAndView(data,"register_edit_user.ftl");
         }, new FreeMarkerEngine(configuration));
 
-        post("/admin/edit_user", (request, response) -> {
+        post("/admin/user/edit", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_user");
             data.put("loggedIn", Sesion.isLoggedIn(request));
@@ -111,7 +111,7 @@ public class Main {
 
             if(target == null) {
                 //redireccionar por error
-                response.redirect("/admin/users");
+                response.redirect("/admin/user/list");
             }
             else {
                 //tratar de actualizar usuario
@@ -125,7 +125,7 @@ public class Main {
 
                 if(GestorUsuarios.saveUsuario(target,false)) {
                     //redireccionar
-                    response.redirect("/admin/users");
+                    response.redirect("/admin/user/list");
                 }
                 else {
                     //setear datos para llenar formulario
@@ -148,6 +148,14 @@ public class Main {
             }
 
             return new ModelAndView(data,"register_edit_user.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        get("/article/new", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","new_article");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+
+            return new ModelAndView(data,"create_edit_article.ftl");
         }, new FreeMarkerEngine(configuration));
 
         get("/login", (request, response) -> {

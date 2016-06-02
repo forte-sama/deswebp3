@@ -6,8 +6,7 @@ import models.Usuario;
 import spark.Request;
 import spark.Session;
 
-import static wrappers.AccessTypes.ADMIN_ONLY;
-import static wrappers.AccessTypes.AUTHOR_ONLY;
+import static wrappers.AccessTypes.LOGGED_IN_ONLY;
 
 /**
  * Created by forte on 01/06/16.
@@ -28,6 +27,7 @@ public class Sesion {
             case AUTHOR_ONLY:
                 return type_control(request,"autor");
 
+            case FREE:
             default:
                 return true;
         }
@@ -61,14 +61,14 @@ public class Sesion {
         session.invalidate();
     }
 
+    public static String getUsuarioActivo(Request request) {
+        Session session = request.session(true);
+
+        return session.attribute("username");
+    }
+
     public static boolean isLoggedIn(Request request) {
-        Session session = request.session(false);
-
-        if(session != null){
-            if(session.attribute("username") != null) return true;
-        }
-
-        return false;
+        return accesoValido(LOGGED_IN_ONLY,request,null);
     }
 
     //creacion de articulos
@@ -99,22 +99,26 @@ public class Sesion {
         String usr_type = session.attribute("user_type");
         String username_actual = session.attribute("username");
 
+        boolean exito = true;
+
         //permitir acceso cuando se han seteado datos de la sesion
         if(usr_type != null && username_actual != null) {
             //recurso actual (articulo, comentario) pertenece a usuario en sesion actual
             if(recurso instanceof Articulo) {
-                return ((Articulo) recurso).getAutorId() == username_actual;
+                exito = ((Articulo) recurso).getAutorId() == username_actual;
             }
             else if(recurso instanceof Comentario) {
-                return ((Comentario) recurso).getAutorId() == username_actual;
+                exito = ((Comentario) recurso).getAutorId() == username_actual;
             }
-            else {
-                return false;
+            else if(recurso instanceof Usuario){
+                exito = ((Usuario) recurso).getUsername() == username_actual;
             }
         }
         else {
-            return false;
+            exito = false;
         }
+
+        return exito;
     }
 
     //admin
