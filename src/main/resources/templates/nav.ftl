@@ -16,7 +16,7 @@
                 <li><a href="#">Link</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <#if logged_in??>
+                <#if loggedIn == true>
                 <li><a href="/logout">Cerrar Sesion</a></li>
                 <#else>
                 <#if action != "login">

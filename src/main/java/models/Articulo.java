@@ -9,10 +9,10 @@ public class Articulo {
     private long id;
     private String titulo;
     private String cuerpo;
-    private long autorId;
+    private String autorId;
     private Date fecha;
 
-    public Articulo(long id, String titulo, String cuerpo, long autor, Date fecha) {
+    public Articulo(long id, String titulo, String cuerpo, String autor, Date fecha) {
         this.id = id;
         this.titulo = titulo;
         this.cuerpo = cuerpo;
@@ -44,7 +44,7 @@ public class Articulo {
         this.cuerpo = cuerpo;
     }
 
-    public long getAutorId() {
+    public String getAutorId() {
         return this.autorId;
     }
 

@@ -3,9 +3,12 @@ package main;
 import freemarker.template.Configuration;
 import models.Usuario;
 import spark.ModelAndView;
+import spark.Request;
+import spark.Session;
 import spark.template.freemarker.FreeMarkerEngine;
 import wrappers.DB;
 import wrappers.GestorUsuarios;
+import wrappers.Sesion;
 
 import java.util.HashMap;
 
@@ -27,11 +30,14 @@ public class Main {
         //probar estado de la base de datos
         DB.test();
 
+        //aplicar filtros
+        Filtros.iniciarFiltros();
+
         //Rutas
-        /** Ver lista de estudiantes */
         get("/", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","index");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
 
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -39,6 +45,7 @@ public class Main {
         get("/admin/users", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","list_users");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
 
             //obtener los usuarios
             data.put("usuarios", GestorUsuarios.getUsuarios());
@@ -64,6 +71,7 @@ public class Main {
         get("/admin/edit_user/:username", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_user");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
 
             String username = request.params("username");
             Usuario target = GestorUsuarios.getUsuario(username.trim());
@@ -96,6 +104,7 @@ public class Main {
         post("/admin/edit_user", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_user");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
 
             String username = request.queryParams("username");
             Usuario target = GestorUsuarios.getUsuario(username.trim());
@@ -144,13 +153,23 @@ public class Main {
         get("/login", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","login");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
 
             return new ModelAndView(data,"login.ftl");
         }, new FreeMarkerEngine(configuration));
 
+        get("/logout",(request, response) -> {
+            Sesion.cerrar(request);
+
+            response.redirect("/");
+
+            return "";
+        });
+
         post("/login", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","login");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
 
             if(!request.queryParams("submit").isEmpty()) {
                 //obtener datos de quien desea iniciar sesion
@@ -158,7 +177,9 @@ public class Main {
                 String password = request.queryParams("password");
 
                 if(GestorUsuarios.credencialesValidas(username,password)) {
+                    Usuario user = GestorUsuarios.getUsuario(username);
                     //TODO iniciar datos de sesion
+                    Sesion.iniciar(request,user);
 
                     //redireccionar con estado de exito
                     response.redirect("/");
@@ -178,6 +199,7 @@ public class Main {
         get("/register", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","register");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
 
             return new ModelAndView(data,"register_edit_user.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -185,6 +207,7 @@ public class Main {
         post("/register", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","register");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
 
             //si el request llego desde el formulario
             if(!request.queryParams("submit").isEmpty()) {
