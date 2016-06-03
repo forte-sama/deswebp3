@@ -37,7 +37,10 @@ public class Filtros {
 
         before("/article/new", (request, response) -> {
             //si no ha iniciado sesion, redireccionar
-            if(!Sesion.accesoValido(AccessTypes.AUTHOR_ONLY,request,null)) {
+            boolean esAutor = Sesion.accesoValido(AccessTypes.AUTHOR_ONLY,request,null);
+            boolean esAdministrador = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+
+            if(!esAutor && !esAdministrador) {
                 response.redirect("/");
             }
         });

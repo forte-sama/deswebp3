@@ -28,7 +28,7 @@ public class GestorArticulos {
                 PreparedStatement pstm = con.prepareStatement(sql);
 
                 pstm.setString(1, titulo);
-                pstm.setString(2, cuerpo);
+                pstm.setString(2, cuerpo.replace("'","").replace("\"",""));
                 pstm.setString(3, username);
                 pstm.setDate(4, new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
 
