@@ -40,6 +40,8 @@ public class Main {
             data.put("action","index");
             data.put("loggedIn",Sesion.isLoggedIn(request));
             data.put("articulos",GestorArticulos.getArticulos());
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -49,6 +51,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","list_users");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             //obtener los usuarios
             data.put("usuarios", GestorUsuarios.getUsuarios());
@@ -75,6 +79,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_user");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             String username = request.params("username");
             Usuario target = GestorUsuarios.getUsuario(username.trim());
@@ -108,6 +114,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_user");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             String username = request.queryParams("username");
             Usuario target = GestorUsuarios.getUsuario(username.trim());
@@ -158,6 +166,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","new_article");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             return new ModelAndView(data,"create_edit_article.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -166,6 +176,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","new_article");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             String titulo = request.queryParams("titulo");
             String cuerpo = request.queryParams("cuerpo");
@@ -196,6 +208,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_article");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             String raw_id = request.params("articulo_id");
             Articulo articulo = null;
@@ -224,6 +238,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_article");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             //obtener datos del form y del usuario activo
             String raw_id = request.queryParams("id");
@@ -287,6 +303,11 @@ public class Main {
             data.put("action","view_article");
             data.put("loggedIn",Sesion.isLoggedIn(request));
             data.put("currentUser",Sesion.getUsuarioActivo(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+            if(esAdmin) {
+                data.put("isAdmin","si");
+            }
 
             String raw_article_id = request.params("article_id");
             boolean exito = false;
@@ -344,11 +365,50 @@ public class Main {
             return "";
         });
 
+        get("/comment/delete/:article_id/:comment_id", (request, response) -> {
+            String articulo_id   = request.params("article_id");
+
+            boolean exito = false;
+
+            try {
+                long long_articulo   = Long.parseLong(articulo_id);
+
+                Articulo articulo = GestorArticulos.getArticulo(long_articulo);
+
+                exito = articulo.getAutorId() == Sesion.getUsuarioActivo(request);
+
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                exito = false;
+                e.printStackTrace();
+            }
+
+            boolean esAdministrador = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+
+            if(exito || esAdministrador) {
+                String comentario_id = request.params("comment_id");
+
+                try {
+                    long long_comentario_id = Long.parseLong(comentario_id);
+                    GestorComentarios.deleteComentario(long_comentario_id);
+                } catch (NumberFormatException e) {
+                    //TODO CAMBIAR MENSAJE DE EXCEPCION
+                    e.printStackTrace();
+                }
+            }
+
+            response.redirect("/article/view/" + articulo_id);
+
+            return "";
+        });
+
 
         get("/login", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","login");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             return new ModelAndView(data,"login.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -365,6 +425,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","login");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             if(!request.queryParams("submit").isEmpty()) {
                 //obtener datos de quien desea iniciar sesion
@@ -395,6 +457,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","register");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             return new ModelAndView(data,"register_edit_user.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -403,6 +467,8 @@ public class Main {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","register");
             data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             //si el request llego desde el formulario
             if(!request.queryParams("submit").isEmpty()) {

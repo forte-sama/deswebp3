@@ -67,6 +67,12 @@ public class Sesion {
         return session.attribute("username");
     }
 
+    public  static String getTipoUsuarioActivo(Request request) {
+        Session session = request.session(true);
+
+        return session.attribute("user_type");
+    }
+
     public static boolean isLoggedIn(Request request) {
         return accesoValido(LOGGED_IN_ONLY,request,null);
     }

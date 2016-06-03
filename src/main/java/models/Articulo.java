@@ -67,7 +67,7 @@ public class Articulo {
     public String preview() {
         int length = this.getCuerpo().length();
 
-        return this.getCuerpo().substring(0,length >= 70 ? 69 : length);
+        return this.getCuerpo().substring(0,length >= 70 ? 69 : length) + "...";
     }
 
     public Set<String> etiquetas() {

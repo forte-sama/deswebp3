@@ -1,12 +1,10 @@
 package main;
 
 import models.Articulo;
+import models.Comentario;
 import models.Usuario;
 import spark.Response;
-import wrappers.AccessTypes;
-import wrappers.GestorArticulos;
-import wrappers.GestorUsuarios;
-import wrappers.Sesion;
+import wrappers.*;
 
 import static spark.Spark.before;
 import spark.Request;
@@ -39,7 +37,7 @@ public class Filtros {
 
         before("/article/new", (request, response) -> {
             //si no ha iniciado sesion, redireccionar
-            if(!Sesion.isLoggedIn(request)) {
+            if(!Sesion.accesoValido(AccessTypes.AUTHOR_ONLY,request,null)) {
                 response.redirect("/");
             }
         });
@@ -79,6 +77,28 @@ public class Filtros {
         before("/comment/new", (request, response) -> {
             if(!Sesion.isLoggedIn(request)) {
                 response.redirect("/");
+            }
+        });
+        before("/comment/delete/:article_id/:comment_id", (request, response) -> {
+            String articulo_id   = request.params("article_id");
+
+            boolean exito = false;
+
+            try {
+                long long_articulo   = Long.parseLong(articulo_id);
+
+                Articulo articulo = GestorArticulos.getArticulo(long_articulo);
+
+                exito = articulo.getAutorId() == Sesion.getUsuarioActivo(request);
+
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                exito = false;
+                e.printStackTrace();
+            }
+
+            if(!exito) {
+                response.redirect("/article/view/" + articulo_id);
             }
         });
     }

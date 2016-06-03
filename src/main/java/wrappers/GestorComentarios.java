@@ -39,7 +39,32 @@ public class GestorComentarios {
         return exito;
     }
 
+    public static boolean deleteComentario(long comentario_id) {
+        String sql = "DELETE FROM comentarios WHERE id=?";
+        Connection con = null;
+
+        boolean exito = false;
+
+        try {
+            con = DB.getConnection();
+
+            PreparedStatement pstm = con.prepareStatement(sql);
+            pstm.setLong(1, comentario_id);
+
+            exito = pstm.executeUpdate() > 0;
+        } catch (SQLException e) {
+            //TODO CAMBIAR MENSAJE DE EXCEPCION
+            e.printStackTrace();
+            exito = false;
+        } finally {
+            closeConnection(con);
+        }
+
+        return exito;
+    }
+
     public static ArrayList<Comentario> getComentarios(long articulo_id) {
+        String sql = "SELECT id,texto,autor,articulo FROM comentarios WHERE articulo=? ORDER BY id DESC";
         Connection con = null;
 
         ArrayList<Comentario> resp = new ArrayList<>();
