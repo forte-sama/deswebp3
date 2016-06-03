@@ -44,6 +44,7 @@ public class Main {
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
 
+
         get("/admin/user/list", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","list_users");
@@ -151,6 +152,7 @@ public class Main {
 
             return new ModelAndView(data,"register_edit_user.ftl");
         }, new FreeMarkerEngine(configuration));
+
 
         get("/article/new", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
@@ -282,8 +284,9 @@ public class Main {
 
         get("/article/view/:article_id", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
-            data.put("action","login");
-            data.put("loggedIn", Sesion.isLoggedIn(request));
+            data.put("action","view_article");
+            data.put("loggedIn",Sesion.isLoggedIn(request));
+            data.put("currentUser",Sesion.getUsuarioActivo(request));
 
             String raw_article_id = request.params("article_id");
             boolean exito = false;
@@ -295,6 +298,7 @@ public class Main {
 
                 if(articulo != null) {
                     data.put("articulo", articulo);
+                    data.put("comentarios",GestorComentarios.getComentarios(articulo.getId()));
                     exito = true;
                 }
             } catch (NumberFormatException e) {
@@ -308,6 +312,38 @@ public class Main {
 
             return new ModelAndView(data,"view_article.ftl");
         }, new FreeMarkerEngine(configuration));
+
+
+        post("/comment/new", (request, response) -> {
+            if(!Sesion.isLoggedIn(request)) {
+                response.redirect("/");
+            }
+
+            String username        = Sesion.getUsuarioActivo(request);
+            String comentario      = request.queryParams("comentario");
+            String raw_articulo_id = request.queryParams("articulo_id");
+
+            boolean exito = false;
+
+            try {
+                long long_articulo_id = Long.parseLong(raw_articulo_id);
+                GestorComentarios.newComentario(username, comentario, long_articulo_id);
+                exito = true;
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                e.printStackTrace();
+            }
+
+            if(exito) {
+                response.redirect("/article/view/" + raw_articulo_id);
+            }
+            else {
+                response.redirect("/");
+            }
+
+            return "";
+        });
+
 
         get("/login", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();

@@ -31,6 +31,11 @@ public class Filtros {
         before("/admin/user/delete/:username",(request, response) -> {
             validarAccesoUsuario(request,response,"get");
         });
+        before("/admin/user/list",(request, response) -> {
+            if(!Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null)) {
+                response.redirect("/");
+            }
+        });
 
         before("/article/new", (request, response) -> {
             //si no ha iniciado sesion, redireccionar
@@ -46,7 +51,6 @@ public class Filtros {
             //validar por metodo POST el acceso editar el articulo con id=article_id
             validarAccesoArticulo(request,response,"post");
         });
-        //TODO ARREGLAR FILTRO PARA DELETE
         before("/article/delete/:article_id", (request, response) -> {
             //validar por metodo POST el acceso a borrar el articulo con id=article_id
             boolean exito = false;
@@ -68,6 +72,12 @@ public class Filtros {
             }
 
             if(!exito) {
+                response.redirect("/");
+            }
+        });
+
+        before("/comment/new", (request, response) -> {
+            if(!Sesion.isLoggedIn(request)) {
                 response.redirect("/");
             }
         });

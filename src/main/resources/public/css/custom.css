@@ -6,3 +6,11 @@ body {
 textarea {
     resize: none;
 }
+
+a {
+    color: #101010;
+}
+
+a:hover {
+    text-decoration: none;
+}

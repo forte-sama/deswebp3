@@ -34,7 +34,7 @@
                                 <a href="article/view/${articulo.getId()}" class="btn btn-success">Ver mas</a>
                             </div>
                             <div class="col-md-3 text-warning" style="text-align: right;">
-                                <strong>${articulo.getAutorId()}</strong>
+                                <p>Escrita  en <em>${articulo.getFecha()}</em> por: <strong>${articulo.getAutorId()}</strong></p>
                             </div>
                         </div>
                     </div>

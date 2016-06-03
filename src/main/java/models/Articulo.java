@@ -1,7 +1,9 @@
 package models;
 
+import freemarker.template.SimpleDate;
 import wrappers.GestorEtiquetas;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
 
@@ -51,8 +53,11 @@ public class Articulo {
         return this.autorId;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public String getFecha() {
+        String format = "EEE, d MMM yyyy";
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+
+        return formatter.format(this.fecha);
     }
 
     public void setFecha(Date fecha) {

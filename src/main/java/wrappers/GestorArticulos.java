@@ -3,6 +3,7 @@ package wrappers;
 import models.Articulo;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,17 +81,17 @@ public class GestorArticulos {
         return articulo;
     }
 
-    public static Set<Articulo> getArticulos() {
-        String sql = "SELECT id,titulo,cuerpo,autor,fecha FROM articulos;";
+    public static ArrayList<Articulo> getArticulos() {
+        String sql = "SELECT id,titulo,cuerpo,autor,fecha FROM articulos ORDER BY id DESC;";
 
         Connection con = null;
 
-        Set<Articulo> resp = new HashSet<>();
+        ArrayList<Articulo> resp = new ArrayList<>();
 
         try {
             con = DB.getConnection();
 
-            ResultSet rs = con.createStatement().executeQuery(sql);
+            ResultSet rs = con.prepareStatement(sql).executeQuery();
 
             while(rs.next()) {
                 resp.add(new Articulo(rs.getLong("id"),
