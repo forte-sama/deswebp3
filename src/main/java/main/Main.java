@@ -38,7 +38,8 @@ public class Main {
         get("/", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","index");
-            data.put("loggedIn", Sesion.isLoggedIn(request));
+            data.put("loggedIn",Sesion.isLoggedIn(request));
+            data.put("articulos",GestorArticulos.getArticulos());
 
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -278,6 +279,35 @@ public class Main {
 
             return "";
         });
+
+        get("/article/view/:article_id", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","login");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+
+            String raw_article_id = request.params("article_id");
+            boolean exito = false;
+
+            try {
+                long long_id = Long.parseLong(raw_article_id);
+
+                Articulo articulo = GestorArticulos.getArticulo(long_id);
+
+                if(articulo != null) {
+                    data.put("articulo", articulo);
+                    exito = true;
+                }
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                e.printStackTrace();
+            }
+
+            if(!exito) {
+                response.redirect("/");
+            }
+
+            return new ModelAndView(data,"view_article.ftl");
+        }, new FreeMarkerEngine(configuration));
 
         get("/login", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();

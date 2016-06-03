@@ -1,6 +1,9 @@
 package models;
 
+import wrappers.GestorEtiquetas;
+
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Created by forte on 31/05/16.
@@ -54,5 +57,15 @@ public class Articulo {
 
     public void setFecha(Date fecha) {
         this.fecha = fecha;
+    }
+
+    public String preview() {
+        int length = this.getCuerpo().length();
+
+        return this.getCuerpo().substring(0,length >= 70 ? 69 : length);
+    }
+
+    public Set<String> etiquetas() {
+        return GestorEtiquetas.cargarListaEtiquetas(this.getId());
     }
 }

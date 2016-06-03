@@ -13,7 +13,9 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-left">
                 <li <#if action == "index">class="active"</#if>><a href="/">Home</a></li>
+                <#if loggedIn == true>
                 <li <#if action == "new_article">class="active"</#if>><a href="/article/new">Crear Articulo</a></li>
+                </#if>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <#if loggedIn == true>

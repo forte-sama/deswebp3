@@ -4,6 +4,7 @@ import models.Articulo;
 
 import java.sql.*;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -77,6 +78,36 @@ public class GestorArticulos {
         }
 
         return articulo;
+    }
+
+    public static Set<Articulo> getArticulos() {
+        String sql = "SELECT id,titulo,cuerpo,autor,fecha FROM articulos;";
+
+        Connection con = null;
+
+        Set<Articulo> resp = new HashSet<>();
+
+        try {
+            con = DB.getConnection();
+
+            ResultSet rs = con.createStatement().executeQuery(sql);
+
+            while(rs.next()) {
+                resp.add(new Articulo(rs.getLong("id"),
+                                        rs.getString("titulo"),
+                                        rs.getString("cuerpo"),
+                                        rs.getString("autor"),
+                                        rs.getDate("fecha")));
+            }
+
+        } catch (SQLException e) {
+            //TODO CAMBIAR MENSAJE DE EXCEPCION
+            e.printStackTrace();
+        } finally {
+            closeConnection(con);
+        }
+
+        return resp;
     }
 
     public static  boolean editArticulo(long id, String username, String titulo, String cuerpo,Set<String> etiquetas) {

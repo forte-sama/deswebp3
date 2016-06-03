@@ -15,31 +15,33 @@
     <div class="row">
         <div class="col col-md-12">
             <div class="well well-lg">
-                <#list articulos as articulo>
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        ${articulo.getTitulo()}
+                        <h1>${articulo.getTitulo()}</h1>
+                        <hr />
+                        <h5>Escrita por: <strong>${articulo.getAutorId()}</strong></h5>
                     </div>
                     <div class="panel-body">
-                        ${articulo.preview()}
-                    </div>
-                    <div class="panel-footer">
                         <div class="row">
-                            <div class="col-md-5">
-                            <#list articulo.etiquetas() as etiqueta>
-                            <span class="label label-danger">${etiqueta}</span>
-                            </#list>
+                            <div class="col col-md-8">
+                            ${articulo.getCuerpo()}
                             </div>
-                            <div class="col-md-4 text-warning" style="text-align: right;">
-                                <a href="article/view/${articulo.getId()}" class="btn btn-success">Ver mas</a>
-                            </div>
-                            <div class="col-md-3 text-warning" style="text-align: right;">
-                                <strong>${articulo.getAutorId()}</strong>
+                            <div class="col col-md-4">
+                                <#list articulo.etiquetas() as etiqueta>
+                                <span class="label label-danger">${etiqueta}</span>
+                                </#list>
+                                <hr />
+                                <div class="alert alert-danger">
+                                    <p>Vamo a ver como se ve</p>
+                                </div>
+                                <hr />
+                                <div class="alert alert-success">
+                                    <p>Vamo a ver como se ve</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                </#list>
             </div>
         </div>
     </div>
