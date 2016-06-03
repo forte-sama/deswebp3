@@ -15,7 +15,7 @@ public class Usuario {
         this.setPassword(password);
         this.setNombre(nombre);
         this.setAdministrador(administrador);
-        this.setAutor(autor);
+        this.setAutor(this.isAdministrador() || autor);
     }
 
     public String getUsername() {

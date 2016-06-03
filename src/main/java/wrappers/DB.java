@@ -42,14 +42,9 @@ public class DB {
                                     "es_administrador BOOLEAN,\n" +
                                     "es_autor BOOLEAN\n" +
                                     ");";
-            String sql_etiqueta =   "CREATE TABLE IF NOT EXISTS etiquetas\n" +
-                                    "(\n" +
-                                    "id BIGINT PRIMARY KEY NOT NULL,\n" +
-                                    "etiqueta VARCHAR(50) NOT NULL\n" +
-                                    ");";
             String sql_articulo =   "CREATE TABLE IF NOT EXISTS articulos\n" +
                                     "(\n" +
-                                    "id BIGINT PRIMARY KEY NOT NULL,\n" +
+                                    "id BIGINT AUTO_INCREMENT PRIMARY KEY NOT NULL,\n" +
                                     "titulo VARCHAR(500) NOT NULL,\n" +
                                     "cuerpo VARCHAR(10000) NOT NULL,\n" +
                                     "autor VARCHAR(50),\n" +
@@ -58,7 +53,7 @@ public class DB {
                                     ");";
             String sql_comentario = "CREATE TABLE IF NOT EXISTS comentarios\n" +
                                     "(\n" +
-                                    "id BIGINT PRIMARY KEY NOT NULL,\n" +
+                                    "id BIGINT AUTO_INCREMENT PRIMARY KEY NOT NULL,\n" +
                                     "texto VARCHAR(2000) NOT NULL,\n" +
                                     "autor VARCHAR(50),\n" +
                                     "articulo BIGINT,\n" +
@@ -68,7 +63,7 @@ public class DB {
             String sql_articulo_etiqueta =  "CREATE TABLE IF NOT EXISTS articulos_etiquetas\n" +
                                             "(\n" +
                                             "id_articulo BIGINT,\n" +
-                                            "id_etiqueta BIGINT,\n" +
+                                            "id_etiqueta VARCHAR(20),\n" +
                                             "PRIMARY KEY(id_articulo,id_etiqueta)\n" +
                                             ");";
 
@@ -84,7 +79,6 @@ public class DB {
 
             //Orden de creacion de estructura importa
             stm.execute(sql_usuario);
-            stm.execute(sql_etiqueta);
             stm.execute(sql_articulo);
             stm.execute(sql_comentario);
             stm.execute(sql_articulo_etiqueta);

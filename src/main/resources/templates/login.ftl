@@ -39,7 +39,7 @@
                                     <button type="submit" name="submit" value="submit" class="btn btn-primary btn-lg">Iniciar sesion</button>
                                 </div>
                                 <div class="col-md-5 col-md-push-1">
-                                    <a href="/register" class="btn btn-success">Registrarme</a>
+                                    <a href="/user/register" class="btn btn-success">Registrarme</a>
                                 </div>
                             </div>
                         </form>

@@ -38,7 +38,7 @@
                     <div class="col col-md-12">
                         <form
                             <#if action == "register">
-                            action="/register"
+                            action="/user/register"
                             <#elseif action == "edit_user">
                             action="/admin/user/edit"
                             </#if>

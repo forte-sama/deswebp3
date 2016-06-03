@@ -12,8 +12,8 @@
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-left">
-                <li class="active"><a href="/">Home</a></li>
-                <li><a href="#">Link</a></li>
+                <li <#if action == "index">class="active"</#if>><a href="/">Home</a></li>
+                <li <#if action == "new_article">class="active"</#if>><a href="/article/new">Crear Articulo</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <#if loggedIn == true>
@@ -23,7 +23,7 @@
                 <li><a href="/login">Login</a></li>
                 </#if>
                 <#if action != "register">
-                <li><a href="/register">Register</a></li>
+                <li><a href="/user/register">Register</a></li>
                 </#if>
                 </#if>
                 <#--TODO SOLO PRESENTAR DROPDOWN CUANDO SEA UN ADMIN -->

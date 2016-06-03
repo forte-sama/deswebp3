@@ -24,7 +24,7 @@
                     </#if>
                     </div>
                 </div>
-            <#if msg??>
+                <#if msg??>
                 <div class="row">
                     <div class="col col-md-12 text-danger">
                         <div class="alert alert-danger alert-dismissible" role="alert">
@@ -33,32 +33,51 @@
                         </div>
                     </div>
                 </div>
-            </#if>
+                </#if>
                 <div class="row">
                     <div class="col col-md-12">
                         <form
-                        <#--TODO MANDAR AL MISMO URL PARA PROCESAR CREACION/EDICION DE ARTICULO -->
-                        <#--<#if action == "new_article">-->
-                                <#--action="/article/new"-->
-                        <#--<#elseif action == "edit_article">-->
-                                <#--action="/article/edit"-->
-                        <#--</#if>-->
-                                action="article/process"
-                                method="post">
-                            <#if action == "edit_article">
-                            <input type="hidden" name="id" value="${article.id?string["0"]}">
+                            <#if
+                            action == "new_article">
+                            action="/article/new"
+                            <#elseif
+                            action == "edit_article">
+                            action="/article/edit"
                             </#if>
-                            <#--<#include "login_register_form_fields.ftl">-->
+                            method="post">
+                            <#if id??>
+                            <input type="hidden" name="id" value="${id?string["0"]}">
+                            </#if>
+                            <#-- inicio form fields -->
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label for="titulo">Titulo</label>
+                                    <input type="text" class="form-control" name="titulo" placeholder="Historia generica" <#if titulo??>value="${titulo}"</#if>>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label for="cuerpo">Cuerpo</label>
+                                    <textarea class="form-control" name="cuerpo" placeholder="Lorem Ipsum... bla... bla..." rows="9"><#if cuerpo??>${cuerpo}</#if></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label for="etiquetas">Etiquetas</label>
+                                    <input type="text" class="form-control" name="etiquetas" placeholder="sql, youtube, google" <#if etiquetas??>value="${etiquetas}"</#if>>
+                                </div>
+                            </div>
+                            <#-- fin form fields -->
                             <div class="row">
                                 <div class="col-md-7">
                                     <button type="submit" name="submit" value="submit" class="btn btn-primary btn-lg">
                                         Terminar <#if action == "new_article">Articulo<#elseif action == "edit_article">Edicion de Articulo</#if>
                                     </button>
                                 </div>
-                            <#if action == "edit_article" && username??>
-                                <div class="col-md-3 col-md-offset-2">
-                                    <a class="btn btn-danger" href="/article/delete/${article.id}">Borrar</a>
-                                </div>
+                            <#if action == "edit_article" && id??>
+                            <div class="col-md-3 col-md-offset-2">
+                                <a class="btn btn-danger" href="/article/delete/${id?string["0"]}">Borrar</a>
+                            </div>
                             </#if>
                             </div>
                         </form>

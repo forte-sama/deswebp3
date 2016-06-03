@@ -102,7 +102,7 @@ public class Sesion {
         boolean exito = true;
 
         //permitir acceso cuando se han seteado datos de la sesion
-        if(usr_type != null && username_actual != null) {
+        if(usr_type != null && username_actual != null && recurso != null) {
             //recurso actual (articulo, comentario) pertenece a usuario en sesion actual
             if(recurso instanceof Articulo) {
                 exito = ((Articulo) recurso).getAutorId() == username_actual;

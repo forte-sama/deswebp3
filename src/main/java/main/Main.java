@@ -1,16 +1,17 @@
 package main;
 
+import com.sun.org.apache.xalan.internal.xsltc.cmdline.getopt.GetOpt;
 import freemarker.template.Configuration;
+import models.Articulo;
 import models.Usuario;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Session;
 import spark.template.freemarker.FreeMarkerEngine;
-import wrappers.DB;
-import wrappers.GestorUsuarios;
-import wrappers.Sesion;
+import wrappers.*;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import static spark.Spark.*;
 import static spark.debug.DebugScreen.enableDebugScreen;
@@ -158,6 +159,126 @@ public class Main {
             return new ModelAndView(data,"create_edit_article.ftl");
         }, new FreeMarkerEngine(configuration));
 
+        post("/article/new", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","new_article");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+
+            String titulo = request.queryParams("titulo");
+            String cuerpo = request.queryParams("cuerpo");
+            String raw_etiquetas = request.queryParams("etiquetas");
+
+            Set<String> etiquetas = GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
+
+            //Crear articulo en el gestor
+            boolean exito = GestorArticulos.newArticulo(Sesion.getUsuarioActivo(request),titulo,cuerpo,etiquetas);
+
+            if(exito) {
+                //redireccionar a vista con mis articulos
+                response.redirect("/");
+            }
+            else {
+                data.put("titulo",titulo);
+                data.put("cuerpo",cuerpo);
+                data.put("etiquetas",raw_etiquetas);
+
+                data.put("msg_type","error");
+                data.put("msg","Hubo un error en el formulario");
+            }
+
+            return new ModelAndView(data,"create_edit_article.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        get("/article/edit/:articulo_id", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","edit_article");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+
+            String raw_id = request.params("articulo_id");
+            Articulo articulo = null;
+
+            try {
+                Long long_id = Long.parseLong(raw_id);
+                articulo = GestorArticulos.getArticulo(long_id);
+            } catch(NumberFormatException e) {
+                e.printStackTrace();
+            }
+
+            if (articulo != null) {
+                data.put("id",articulo.getId());
+                data.put("cuerpo",articulo.getCuerpo());
+                data.put("titulo",articulo.getTitulo());
+                data.put("etiquetas",GestorEtiquetas.cargarEtiquetas(articulo.getId()));
+            }
+            else {
+                response.redirect("/");
+            }
+
+            return new ModelAndView(data,"create_edit_article.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        post("/article/edit", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","edit_article");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+
+            //obtener datos del form y del usuario activo
+            String raw_id = request.queryParams("id");
+            long long_id = -1;
+            boolean exito = true;
+
+            String autor  = Sesion.getUsuarioActivo(request);
+            String titulo = request.queryParams("titulo");
+            String cuerpo = request.queryParams("cuerpo");
+            String raw_etiquetas = request.queryParams("etiquetas");
+
+            Set<String> etiquetas = GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
+
+            try {
+                long_id = Long.parseLong(raw_id.trim());
+
+                exito = GestorArticulos.editArticulo(long_id,autor,titulo,cuerpo,etiquetas);
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXITO
+                e.printStackTrace();
+            }
+
+            if(exito) {
+                response.redirect("/");
+            }
+            else {
+                data.put("id",long_id);
+                data.put("titulo",titulo);
+                data.put("cuerpo",cuerpo);
+                data.put("etiquetas",GestorEtiquetas.cargarEtiquetas(long_id));
+
+                data.put("msg_type","error");
+                data.put("msg","Hubo un error con el formulario.");
+            }
+
+            return new ModelAndView(data,"create_edit_article.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        get("/article/delete/:article_id", (request, response) -> {
+            String raw_id = request.params("article_id");
+
+            try {
+                long long_id = Long.parseLong(raw_id);
+
+                Articulo articulo = GestorArticulos.getArticulo(long_id);
+
+                if(articulo != null) {
+                    GestorArticulos.deleteArticulo(articulo.getId());
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+
+            response.redirect("/");
+
+            return "";
+        });
+
         get("/login", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","login");
@@ -186,7 +307,7 @@ public class Main {
 
                 if(GestorUsuarios.credencialesValidas(username,password)) {
                     Usuario user = GestorUsuarios.getUsuario(username);
-                    //TODO iniciar datos de sesion
+                    //iniciar sesion
                     Sesion.iniciar(request,user);
 
                     //redireccionar con estado de exito
@@ -204,7 +325,7 @@ public class Main {
             return new ModelAndView(data,"login.ftl");
         }, new FreeMarkerEngine(configuration));
 
-        get("/register", (request, response) -> {
+        get("/user/register", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","register");
             data.put("loggedIn", Sesion.isLoggedIn(request));
@@ -212,7 +333,7 @@ public class Main {
             return new ModelAndView(data,"register_edit_user.ftl");
         }, new FreeMarkerEngine(configuration));
 
-        post("/register", (request, response) -> {
+        post("/user/register", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","register");
             data.put("loggedIn", Sesion.isLoggedIn(request));
